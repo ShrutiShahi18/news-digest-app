@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NhostClient } from "@nhost/nhost-js";
 
-const nhost = new NhostClient({ subdomain: "your-nhost-subdomain" });
+const nhost = new NhostClient({ subdomain: "ktkucbnyhybpruopvqyu" });
 
 function App() {
     const [user, setUser] = useState(null);
