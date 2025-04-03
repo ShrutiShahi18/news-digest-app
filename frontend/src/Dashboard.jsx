@@ -10,7 +10,7 @@ const NewsFeed = () => {
 
   useEffect(() => {
     if (!accessToken) {
-      navigate("/login");
+      navigate("/login");  // This ensures user is redirected if they are not authenticated
     }
   }, [accessToken, navigate]);
 
@@ -70,7 +70,7 @@ const NewsFeed = () => {
         <button
           onClick={() => {
             signOut();
-            navigate("/login");
+            navigate("/login");  // Ensure this redirects to login after sign-out
           }}
           className="bg-red-500 text-white px-4 py-2 rounded"
         >
