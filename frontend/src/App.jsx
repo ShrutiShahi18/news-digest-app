@@ -1,40 +1,44 @@
-import { useState } from "react";
-import { NhostClient } from "@nhost/nhost-js";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { NhostClient } from '@nhost/nhost-js';
+import { NhostProvider } from '@nhost/react'; // Correct import
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
-const nhost = new NhostClient({ subdomain: "ktkucbnyhybpruopvqyu", 
-  region: "ap-south-1" });
+import Login from './Login';
+import Dashboard from './Dashboard';
+import Signup from './Signup';
+
+const nhost = new NhostClient({
+  subdomain: import.meta.env.VITE_NHOST_SUBDOMAIN,
+  region: import.meta.env.VITE_NHOST_REGION,
+  clientStorageType: 'localStorage',
+  autoRefreshToken: true,
+  autoSignIn: true,
+});
+
+const apolloClient = new ApolloClient({
+  uri: `https://${import.meta.env.VITE_NHOST_SUBDOMAIN}.nhost.run/v1/graphql`,
+  cache: new InMemoryCache(),
+  headers: {
+    authorization: `Bearer ${nhost.auth.getAccessToken()}`,
+  },
+});
 
 function App() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
-
-    const handleSignup = async () => {
-        const { error } = await nhost.auth.signUp({
-            email,
-            password,
-            options: {
-                locale: "en-US"  // Fix the locale issue
-            }
-        });
-
-        if (error) {
-            setError(error.message);
-            console.error("Signup Error:", error);
-        } else {
-            alert("Signup successful! Please verify your email.");
-        }
-    };
-
-    return (
-        <div className="auth-container">
-            <h2>Sign Up</h2>
-            <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-            <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-            <button onClick={handleSignup}>Sign Up</button>
-            {error && <p className="error">{error}</p>}
-        </div>
-    );
+  return (
+    <NhostProvider nhost={nhost}>  {/* Updated to NhostProvider */}
+      <ApolloProvider client={apolloClient}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </Router>
+      </ApolloProvider>
+    </NhostProvider>
+  );
 }
 
 export default App;
