@@ -5,12 +5,12 @@ import { useNavigate } from "react-router-dom";
 const NewsFeed = () => {
   const [news, setNews] = useState([]);
   const accessToken = useAccessToken();
-  const signOut = useSignOut();
+  const { signOut } = useSignOut(); // Ensure you get the signOut function here
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!accessToken) {
-      navigate("/login");  // This ensures user is redirected if they are not authenticated
+      navigate("/login"); // Redirect to login if no access token
     }
   }, [accessToken, navigate]);
 
@@ -63,15 +63,18 @@ const NewsFeed = () => {
     fetchNews();
   }, [accessToken]);
 
+  // Handle logout
+  const handleLogout = async () => {
+    await signOut(); // Ensure signOut is available
+    navigate("/login"); // Navigate to login page after sign-out
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">News Digest</h1>
         <button
-          onClick={() => {
-            signOut();
-            navigate("/login");  // Ensure this redirects to login after sign-out
-          }}
+          onClick={handleLogout} // Correct the onClick function
           className="bg-red-500 text-white px-4 py-2 rounded"
         >
           Logout
